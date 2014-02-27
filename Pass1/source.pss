@@ -1,0 +1,65 @@
+COPY      START  1000        1000  
+FIRST     STL    RETADR      1000  14  
+CLOOP     JSUB   RDREC       1003  48  
+          LDA    LENGTH      1006  00  
+          COMP   ZERO        1009  28  
+          JEQ    ENDFIL      100C  30  
+          JSUB   WRREC       100F  48  
+          J      CLOOP       1012  3C  
+ENDFIL    LDA    EOF         1015  00  
+          STA    BUFFER      1018  0C  
+          LDA    THREE       101B  00  
+          STA    LENGTH      101E  0C  
+          JSUB   WRREC       1021  48  
+          LDL    RETADR      1024  08  
+          RSUB               1027  4C  
+EOF       BYTE   C'EOF'      102A  00  
+THREE     WORD   3           102D  00  
+ZERO      WORD   0           1030  00  
+RETADR    RESW   1           1033  00  
+LENGTH    RESW   1           1036  00  
+BUFFER    RESB   4096        1039  00  
+RDREC     LDX    ZERO        2039  04  
+          LDA    ZERO        203C  00  
+RLOOP     TD     INPUT       203F  E0  
+          JEQ    RLOOP       2042  30  
+          RD     INPUT       2045  D8  
+          COMP   ZERO        2048  28  
+          JEQ    EXIT        204B  30  
+          STCH   BUFFER,X    204E  54  
+          TIX    MAXLEN      2051  2C  
+          JLT    RLOOP       2054  38  
+EXIT      STX    LENGTH      2057  10  
+          RSUB               205A  4C  
+INPUT     BYTE   X'F1'       205D  00  
+MAXLEN    WORD   4096        2060  00  
+WRREC     LDX    ZERO        2063  04  
+WLOOP     TD     OUTPUT      2066  E0  
+          JEQ    WLOOP       2069  30  
+          LDCH   BUFFER,X    206C  50  
+          WD     OUTPUT      206F  DC  
+          TIX    LENGTH      2072  2C  
+          JLT    WLOOP       2075  38  
+          RSUB               2078  4C  
+OUTPUT    BYTE   X'05'       207B  00  
+          END    FIRST       207E  
+
+=========================SYMBOLTABLE=========================
+BUFFER - 1039
+CLOOP - 1003
+COPY - 1000
+ENDFIL - 1015
+EOF - 102A
+EXIT - 2057
+FIRST - 1000
+INPUT - 205D
+LENGTH - 1036
+MAXLEN - 2060
+OUTPUT - 207B
+RDREC - 2039
+RETADR - 1033
+RLOOP - 203F
+THREE - 102D
+WLOOP - 2066
+WRREC - 2063
+ZERO - 1030
